@@ -533,11 +533,11 @@ def debug_info():
     return jsonify({'status': 'ok', 'db': db_password})
 
 # New vulnerability for ZAP
-@app.route('/api/search', methods=['GET'])
-def search():
-    query = request.args.get('q', '')
-    # Vulnerability: reflected XSS - user input returned directly in response
-    return f"<html><body><h1>Search results for: {query}</h1></body></html>", 200, {'Content-Type': 'text/html'}
+@app.after_request
+def add_headers(response):
+    response.headers['X-Powered-By'] = 'PHP/5.4.0'  # ZAP vulnerability: server info disclosure
+    response.headers['Server'] = 'Apache/2.2.14'     # ZAP vulnerability: server version disclosure
+    return response
    
 
 
