@@ -142,7 +142,7 @@ jobs:
       # ── ZAP ──────────────────────────────────────────────────────────────────
       - name: Run ZAP baseline scan
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: zaproxy/action-baseline@v0.12.0
+        uses: zaproxy/action-baseline@v0.10.0
         with:
           target: 'http://${{ secrets.SERVER_IP }}:4000'
           cmd_options: '-I'
