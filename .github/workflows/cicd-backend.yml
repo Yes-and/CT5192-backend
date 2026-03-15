@@ -56,7 +56,7 @@ jobs:
           args: >
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.projectName=LMS Backend
+            "-Dsonar.projectName=LMS Backend"
             -Dsonar.sources=.
             -Dsonar.tests=tests
             -Dsonar.exclusions=**/tests/**,**/coverage/**
