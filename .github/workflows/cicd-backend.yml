@@ -142,14 +142,15 @@ jobs:
       # ── ZAP ──────────────────────────────────────────────────────────────────
       - name: Run ZAP baseline scan
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        uses: zaproxy/action-baseline@v0.10.0
-        with:
-          target: 'http://${{ secrets.SERVER_IP }}:4000'
-          cmd_options: '-I'
+        run: |
+          mkdir -p ${{ github.workspace }}/zap-work
+          chmod 777 ${{ github.workspace }}/zap-work
+          docker pull ghcr.io/zaproxy/zaproxy:stable -q
+          docker run --rm             --network=host             -v ${{ github.workspace }}/zap-work:/zap/wrk:rw             ghcr.io/zaproxy/zaproxy:stable             zap-baseline.py             -t http://${{ secrets.SERVER_IP }}:4000             -r /zap/wrk/zap_report.html             -I -d || true
 
       - name: Upload ZAP report
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: zap-backend-report
-          path: report_html.html
+          path: ${{ github.workspace }}/zap-work/zap_report.html
