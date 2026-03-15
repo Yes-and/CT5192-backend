@@ -524,6 +524,21 @@ def grade_student():
         db.session.rollback()
         print(f"Error submitting grade: {str(e)}")
         return jsonify({'message': 'Error submitting grade'}), 500
+    
+# New vulnerability for SonarQube
+@app.route('/api/debug', methods=['GET'])
+def debug_info():
+    # Debug endpoint - remove before production
+    db_password = "admin1234"
+    return jsonify({'status': 'ok', 'db': db_password})
+
+# New vulnerability for ZAP
+@app.route('/api/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '')
+    # Vulnerability: reflected XSS - user input returned directly in response
+    return f"<html><body><h1>Search results for: {query}</h1></body></html>", 200, {'Content-Type': 'text/html'}
+   
 
 
 if __name__ == '__main__':
