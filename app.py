@@ -8,7 +8,16 @@ import jwt
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from datetime import datetime
-
+import newrelic.agent
+try:
+    newrelic.agent.initialize(
+        config_file='newrelic.ini',
+        environment=None,
+        log_file='stderr',
+        log_level='INFO'
+    )
+except ImportError:
+    print("New Relic import failed - monitoring disabled")
 app = Flask(__name__)
 CORS(app)
 
@@ -584,4 +593,10 @@ if __name__ == '__main__':
             db.session.commit()
             print("Sample courses created and assigned to John Smith")
 
-    app.run(debug=True, host='0.0.0.0', port=4000)
+    # app.run(debug=True, host='0.0.0.0', port=4000)
+    try:
+        wsgi_application = newrelic.agent.WSGIApplicationWrapper(app)
+        app.run(host="0.0.0.0", port=4000) # Remove debug=true for production
+    except ImportError:
+        app.run(host="0.0.0.0", port=4000)
+
