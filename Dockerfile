@@ -23,7 +23,8 @@ RUN echo "[newrelic]" > newrelic.ini && \
   echo "monitor_mode = true" >> newrelic.ini && \
   echo "log_level = info" >> newrelic.ini && \
   echo "log_file = stderr" >> newrelic.ini && \
-  echo "distributed_tracing.enabled = true" >> newrelic.ini
+  echo "distributed_tracing.enabled = true" >> newrelic.ini && \
+  echo "host = collector.eu01.nr-data.net" >> newrelic.ini
 
 # Expose the application port
 EXPOSE 4000
