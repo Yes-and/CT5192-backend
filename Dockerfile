@@ -16,16 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . .
 
-# Generate a proper newrelic.ini file at build time
-RUN echo "[newrelic]" > newrelic.ini && \
-  echo "license_key = %(NEW_RELIC_LICENSE_KEY)s" >> newrelic.ini && \
-  echo "app_name = LMS System - Backend" >> newrelic.ini && \
-  echo "monitor_mode = true" >> newrelic.ini && \
-  echo "log_level = info" >> newrelic.ini && \
-  echo "log_file = stderr" >> newrelic.ini && \
-  echo "distributed_tracing.enabled = true" >> newrelic.ini && \
-  echo "host = collector.eu01.nr-data.net" >> newrelic.ini
-
 # Expose the application port
 EXPOSE 4000
 
