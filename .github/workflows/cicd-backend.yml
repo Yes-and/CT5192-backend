@@ -130,9 +130,9 @@ jobs:
         run: |
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} '
             echo "Pulling latest backend image..."
-            docker-compose pull backend-flask
+            docker compose pull backend-flask
             echo "Restarting backend container..."
-            docker-compose up -d --no-deps --force-recreate backend-flask
+            docker compose up -d --no-deps --force-recreate backend-flask
             echo "Cleaning up unused images..."
             docker image prune -f
             echo "Backend deployment complete!"
