@@ -124,6 +124,12 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
+      - name: Copy ELK config files to server
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'mkdir -p ~/filebeat'
+          scp filebeat/filebeat.yml ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:~/filebeat/filebeat.yml
+
       - name: Deploy to server
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
@@ -132,7 +138,9 @@ jobs:
             docker compose pull backend-flask
             echo "Restarting backend container..."
             docker compose up -d --no-deps --force-recreate backend-flask
+            echo "Starting ELK stack..."
+            docker compose up -d elasticsearch kibana filebeat
             echo "Cleaning up unused images..."
             docker image prune -f
-            echo "Backend deployment complete!"
+            echo "Deployment complete!"
           '

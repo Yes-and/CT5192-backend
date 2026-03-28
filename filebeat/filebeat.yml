@@ -1,0 +1,53 @@
+filebeat.inputs:
+- type: container
+  paths:
+  - '/var/lib/docker/containers/*/*.log'
+  json.keys_under_root: true
+  json.message_key: log
+  json.add_error_key: true
+  processors:
+    - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+
+processors:
+  - add_host_metadata:
+    when:
+      not:
+        contains:
+          tags: "forwarded"
+  - add_cloud_metadata: ~
+  - add_docker_metadata: ~
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  indices:
+    - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+      when.or:
+        - equals:
+            container.name: "backend-flask"
+        - equals:
+            container.name: "frontend"
+    - index: "filebeat-other-%{[agent.version]}-%{+yyyy.MM.dd}"
+
+monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: ["elasticsearch:9200"]
+
+logging.level: info
+logging.to_files: true
+logging.files:
+  path: /var/log/filebeat
+  name: filebeat
+  keepfiles: 7
+  permissions: 0644
+
+setup.ilm.enabled: auto
+setup.ilm.rollover_alias: "filebeat"
+setup.ilm.pattern: "{now/d}-000001"
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
+
+setup.kibana:
+  host: "kibana:5601"
+  dashboards.enabled: true
